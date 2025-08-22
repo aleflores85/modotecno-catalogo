@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catálogo de Celulares | #ModoTecno.ba</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#0a0a0c; --card:#111216; --brand:#2357ff; --text:#e8eaf2; --muted:#aab1c5; --pill:#2b2f3a; --shadow:0 10px 25px rgba(0,0,0,.25); --radius:18px; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:linear-gradient(180deg, #0a0a0c 0%, #0b1020 100%); color:var(--text);} 
+    .container{max-width:980px; margin:28px auto 120px; padding:0 16px}
+    .header{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px}
+    .title{font-size:clamp(22px,3vw,32px); font-weight:800; letter-spacing:.2px}
+    .badge{display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#c9d1f7; background:#1b2140; padding:6px 10px; border-radius:999px; border:1px solid #2a3570}
+    .muted{color:var(--muted)}
+
+    .search{position:relative; flex:1; max-width:420px}
+    .search input{width:100%; background:var(--card); color:var(--text); border:1px solid #1f2330; border-radius:12px; padding:12px 40px 12px 44px; outline:none; box-shadow:var(--shadow)}
+    .search svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.6}
+
+    .accordion{display:grid; gap:14px}
+    .item{background:var(--card); border:1px solid #1f2330; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow)}
+    .item summary{list-style:none; cursor:pointer; padding:16px; display:flex; align-items:center; gap:14px; position:relative}
+    .item summary::-webkit-details-marker{display:none}
+    .brand-icon{width:40px; height:40px; border-radius:999px; display:grid; place-items:center; background:#0f1322; border:1px solid #192037}
+    .brand-title{font-weight:800; font-size:18px; letter-spacing:.2px}
+    .brand-meta{margin-left:auto; display:flex; gap:10px; align-items:center}
+    .chev{transition:transform .25s ease}
+    details[open] .chev{transform:rotate(180deg)}
+
+    .panel{padding:0 16px 16px}
+    .models{display:grid; gap:10px; margin-top:10px}
+    .model{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.0)); border:1px solid #242a3a; border-radius:14px; padding:12px; display:grid; gap:8px}
+    .model-head{display:flex; align-items:center; gap:8px; justify-content:space-between}
+    .model-name{font-weight:700}
+    .tags{display:flex; flex-wrap:wrap; gap:6px}
+    .tag{font-size:11px; color:#c9d1f7; background:#1b2140; border:1px solid #2a3570; padding:4px 8px; border-radius:999px}
+    .price{font-weight:800; background:#0f1836; border:1px solid #22306f; padding:6px 10px; border-radius:10px}
+    .btn{text-decoration:none; color:white; background:var(--brand); border:none; padding:10px 14px; border-radius:12px; font-weight:700; box-shadow:var(--shadow)}
+    .btn.alt{background:#2a3145}
+    .pill-red{background:#2b0f12; color:#ff9aa6; border:1px solid #5a1f27}
+
+    .wa{position:fixed; right:18px; bottom:18px; width:62px; height:62px; border-radius:50%; display:grid; place-items:center; background:#25d366; color:#fff; box-shadow:0 14px 30px rgba(37,211,102,.35); text-decoration:none; z-index:30}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:14px;margin:0 0 16px 0">
+      <!-- Colocá tu logo real en ./logo-modotecno.png o cambia el src abajo -->
+      <img src="logo-modotecno.png" alt="#ModoTecno.ba" onerror="this.style.display='none'" style="width:44px;height:44px;border-radius:12px;border:1px solid #1f2330;background:#0f1322;object-fit:cover"/>
+      <div>
+        <div class="badge">#ModoTecno.ba · Catálogo oficial</div>
+        <div class="muted" style="font-size:12px">Se actualiza con tu Google Sheets · Botón WhatsApp en cada modelo</div>
+      </div>
+    </div>
+
+    <div class="header">
+      <div class="title">Catálogo de Celulares</div>
+      <div class="search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-3.8-3.8M10.8 18.5a7.7 7.7 0 1 1 0-15.4 7.7 7.7 0 0 1 0 15.4Z" stroke="currentColor" stroke-width="1.6"/></svg>
+        <input id="q" type="search" placeholder="Buscar modelo o marca…" />
+      </div>
+    </div>
+
+    <div class="accordion" id="accordion"></div>
+  </div>
+
+  <!-- Botón flotante WhatsApp -->
+  <a class="wa" target="_blank" aria-label="WhatsApp" href="https://wa.me/54911671183350?text=Hola%20quiero%20consultar%20por%20un%20celular">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a10 10 0 0 0-8.66 15.01L2 22l5.12-1.28A10 10 0 1 0 12 2Zm-4.41 6.68c.1-.24.3-.52.6-.56.16-.02.33-.02.5 0 .14.03.3.06.42.2.12.13.4.48.46.67.12.27.2.58.1.84-.12.32-.32.62-.54.88-.11.13-.22.25-.16.41.06.16.23.4.35.54.49.64 1.11 1.16 1.83 1.53.23.11.45.26.7.23.2-.03.36-.22.5-.36.15-.16.3-.33.5-.4.2-.08.42-.04.63.02.3.07.7.3.9.5.22.2.33.47.37.75.04.3-.02.62-.15.9-.18.4-.52.68-.92.86-.38.17-.8.2-1.2.15-1.13-.13-2.15-.64-3.07-1.28-1.02-.74-1.88-1.68-2.5-2.77-.2-.35-.38-.72-.5-1.1-.1-.39-.2-.8-.1-1.2.08-.4.25-.78.44-1.13Z"/></svg>
+  </a>
+
+  <script>
+    const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1qI3FwZgIZXMmoQGJObqDqpJX8Qba07n2UN63KerMtHk/export?format=csv';
+    const WHATSAPP = '54911671183350'; // Tu número ✅
+
+    // Utils
+    const esc = (s='') => s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+    const brandIcon = (b) => {
+      const x=b.toLowerCase();
+      if(x.includes('samsung')) return '🔵';
+      if(x.includes('motorola')) return '⚫';
+      if(x.includes('xiaomi')||x.includes('redmi')||x.includes('poco')) return '🟧';
+      if(x.includes('apple')||x.includes('iphone')) return '🍎';
+      if(x.includes('huawei')) return '🔺';
+      if(x.includes('oppo')||x.includes('realme')||x.includes('vivo')) return '🟨';
+      if(x.includes('google')) return '🟩';
+      return '📱';
+    }
+
+    function parseCSV(text){
+      // Simple CSV parser (handles commas and quotes)
+      const rows=[]; let i=0, cur='', cell=''; let inQ=false; let row=[];
+      for(const ch of text){
+        if(ch==='"') { inQ=!inQ; continue; }
+        if(ch==='\n' && !inQ){ row.push(cell); rows.push(row); row=[]; cell=''; continue; }
+        if(ch===',' && !inQ){ row.push(cell); cell=''; continue; }
+        cell+=ch;
+      }
+      if(cell.length||row.length) { row.push(cell); rows.push(row); }
+      return rows;
+    }
+
+    function detectCols(header){
+      const cols = header.map(c=>c.trim().toLowerCase());
+      const pick = (names)=>{
+        for(const n of names){ const i=cols.indexOf(n.toLowerCase()); if(i!==-1) return i; }
+        return -1;
+      };
+      return {
+        prod: pick(['producto','marca y modelo','modelo','equipo']),
+        specs: pick(['especificaciones','ram/rom','ram rom','ram','ram/almacenamiento']),
+        price: pick(['precio_final_ars','precio','precio ars','precio final ars']),
+        colors: pick(['colores','color','color(es)']),
+        stock: pick(['stock','disponibilidad','estado','contacto'])
+      };
+    }
+
+    function parseBrandModel(product){
+      const parts = (product||'').trim().split(/\s+/);
+      if(!parts.length) return {brand:'', model:product||''};
+      if(parts[0].toLowerCase()==='apple' && (parts[1]||'').toLowerCase().startsWith('iphone'))
+        return {brand:'Apple', model:parts.slice(1).join(' ')};
+      if(parts[0].toLowerCase().startsWith('iphone')) return {brand:'Apple', model:product};
+      return {brand: (parts[0]||'').charAt(0).toUpperCase()+ (parts[0]||'').slice(1), model:parts.slice(1).join(' ')};
+    }
+
+    function buildItemHTML(it){
+      const name = esc(it.model + (it.is5g ? ' · 5G' : ''));
+      const tags = [];
+      if(it.specs) tags.push(esc(it.specs));
+      if(it.colors) tags.push(esc(it.colors));
+      const tagsHTML = tags.map(t=>`<span class="tag">${t}</span>`).join('');
+      const price = esc(it.price||'—');
+      const waMsg = encodeURIComponent(`Consulta ${it.brand} ${it.model}`);
+      const priceSpan = it.noStock ? `<span class="price pill-red">${price}</span>` : `<span class="price">${price}</span>`;
+      const btn = it.noStock ? `<a class="btn alt" href="#" onclick="alert('Sin stock por ahora')">Avisarme</a>` : `<a class="btn" target="_blank" href="https://wa.me/${WHATSAPP}?text=${waMsg}">Consultar</a>`;
+      return `
+        <div class="model" data-model="${esc(it.brand+' '+it.model)}">
+          <div class="model-head">
+            <div class="model-name">${esc(it.brand)} · ${name}</div>
+            <div class="actions">${priceSpan}${btn}</div>
+          </div>
+          <div class="tags">${tagsHTML}</div>
+        </div>`;
+    }
+
+    function render(groups){
+      const acc = document.getElementById('accordion');
+      acc.innerHTML = Object.keys(groups).map(brand=>{
+        const icon = brandIcon(brand);
+        const itemsHTML = groups[brand].map(buildItemHTML).join('\n');
+        return `
+          <details class="item">
+            <summary>
+              <div class="brand-icon">${icon}</div>
+              <div class="brand-title">${esc(brand)}</div>
+              <div class="brand-meta">
+                <span class="badge">Modelos actualizados</span>
+                <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </summary>
+            <div class="panel">
+              <div class="models" data-brand="${esc(brand)}">${itemsHTML}</div>
+            </div>
+          </details>`;
+      }).join('\n');
+
+      // Search filter
+      const q = document.getElementById('q');
+      q.addEventListener('input', (e)=>{
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('.models').forEach(group=>{
+          const brand = group.dataset.brand.toLowerCase();
+          let anyVisible = false;
+          group.querySelectorAll('.model').forEach(card=>{
+            const model = card.dataset.model.toLowerCase();
+            const match = !term || brand.includes(term) || model.includes(term);
+            card.style.display = match ? '' : 'none';
+            if(match) anyVisible = true;
+          });
+          let empty = group.parentElement.querySelector('.empty');
+          if(!anyVisible){
+            if(!empty){
+              empty = document.createElement('div');
+              empty.className='empty muted';
+              empty.style.padding='8px 2px';
+              empty.textContent='Sin coincidencias en esta marca';
+              group.parentElement.appendChild(empty);
+            }
+          }else if(empty){ empty.remove(); }
+        });
+      });
+
+      // Abrir solo uno a la vez
+      const all = document.querySelectorAll('details.item');
+      all.forEach(d => d.addEventListener('toggle', () => {
+        if(d.open){ all.forEach(o => { if(o!==d) o.removeAttribute('open'); }); }
+      }));
+    }
+
+    async function load(){
+      try{
+        const res = await fetch(SHEET_CSV, {cache:'no-store'});
+        const txt = await res.text();
+        const rows = parseCSV(txt);
+        if(!rows.length) throw new Error('Hoja vacía');
+        const cols = detectCols(rows[0]);
+        const items = [];
+        for(let i=1;i<rows.length;i++){
+          const r = rows[i];
+          const producto = (r[cols.prod]||'').trim();
+          if(!producto || producto.toLowerCase().startsWith('alias:')) continue; // limpia alias como fila
+          // Quitar "Alias: S3.cristian" si viene pegado al final
+          const productoClean = producto.replace(/Alias:.*/i,'').trim();
+          const specs = (r[cols.specs]||'').trim();
+          const price = (r[cols.price]||'').toString().trim();
+          const colors = (r[cols.colors]||'').trim();
+          const stock = (r[cols.stock]||'').trim();
+          const {brand, model} = parseBrandModel(productoClean);
+          const noStock = /NO\s*STOCK|SIN\s*STOCK/i.test(colors+' '+stock);
+          const is5g = /\b5G\b/i.test(productoClean);
+          items.push({brand, model: model||productoClean, specs, colors, price, noStock, is5g});
+        }
+        // Agrupar por marca en orden de aparición
+        const groups = {};
+        items.forEach(it=>{ if(!groups[it.brand]) groups[it.brand]=[]; groups[it.brand].push(it); });
+        render(groups);
+      }catch(err){
+        console.error(err);
+        document.getElementById('accordion').innerHTML = `<div class="muted">No se pudo cargar la hoja. Verificá que el enlace tenga acceso público de lectura.</div>`;
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
